@@ -2,11 +2,10 @@ package com.example.demo.member.controller;
 
 import com.example.demo.member.dto.MemberDto;
 import com.example.demo.member.entity.Member;
-import com.example.demo.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import com.example.demo.member.service.MemberService;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +36,7 @@ public class MemberController {
             return "member/join";
         }
 
-        Member member = memberService.join(memberDto.getUsername(),
+        Member member = this.memberService.join(memberDto.getUsername(),
                 memberDto.getName(),
                 memberDto.getPassword1(),
                 memberDto.getEmail(),
@@ -46,4 +45,6 @@ public class MemberController {
 
         return "redirect:/";
     }
+
+
 }

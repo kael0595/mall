@@ -1,10 +1,13 @@
 package com.example.demo.member.service;
 
+import com.example.demo.base.exception.DataNotFoundException;
 import com.example.demo.member.entity.Grade;
 import com.example.demo.member.entity.Member;
 import com.example.demo.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +31,14 @@ public class MemberService {
 
         member.setGrade(Grade.BASIC);
         return memberRepository.save(member);
+    }
+
+    public Member getMember(String username) {
+        Optional<Member> memberOptional = memberRepository.findByUsername(username);
+        if (memberOptional.isPresent()) {
+            return memberOptional.get();
+        } else {
+            throw new DataNotFoundException("member not found");
+        }
     }
 }
