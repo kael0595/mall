@@ -6,8 +6,9 @@ import com.example.demo.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,8 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class MemberController {
 
     private final MemberService memberService;
-
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping("/join")
     public String join(MemberDto memberDto) {
@@ -55,7 +55,7 @@ public class MemberController {
     }
 
     @GetMapping("/login")
-    public String login(MemberDto memberDto) {
+    public String login() {
         return "member/login";
     }
 
@@ -63,22 +63,22 @@ public class MemberController {
     public String memberLogin(@RequestParam("username") String username,
                               @RequestParam("password") String password,
                               HttpSession session,
-                              BindingResult bindingResult) {
+                              Model model) {
 
         Member member = memberService.getMember(username);
 
         if (member == null) {
-            bindingResult.rejectValue("LoginFail", "존재하지 않는 계정입니다.");
+            model.addAttribute("loginError", "존재하지 않는 회원입니다.");
             return "redirect:/member/login";
         }
 
-        if (!member.getPassword().equals(password)) {
-            bindingResult.rejectValue("LoginFail", "비밀번호가 일치하지 않습니다.");
-            return "member/login";
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            model.addAttribute("loginError", "비밀번호가 일치하지 않습니다.");
+            return "redirect:/member/login";
         }
 
         session.setAttribute("member", member);
-        return "redirect:/";
+        return "redirect:/member/join";
     }
 
 
