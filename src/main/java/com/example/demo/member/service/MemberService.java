@@ -47,4 +47,14 @@ public class MemberService {
         }
     }
 
+    public Member modify(String username, String password1, String name, String email, String phone, String addr1, String addr2) {
+        Member member = getMember(username);
+        member.setPassword(passwordEncoder.encode(password1));
+        member.setName(name);
+        member.setEmail(email);
+        member.setPhone(phone);
+        member.setAddr1(addr1);
+        member.setAddr2(addr2);
+        return memberRepository.save(member);
+    }
 }

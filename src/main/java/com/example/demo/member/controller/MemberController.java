@@ -1,5 +1,6 @@
 package com.example.demo.member.controller;
 
+import com.example.demo.base.exception.DataNotFoundException;
 import com.example.demo.member.dto.MemberDto;
 import com.example.demo.member.entity.Member;
 import com.example.demo.member.service.MemberService;
@@ -10,10 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -81,5 +79,58 @@ public class MemberController {
         return "redirect:/member/join";
     }
 
+    @GetMapping("/me/{id}")
+    public String me(@PathVariable("id") String id, Model model) {
+        Member member = memberService.getMember(id);
+
+        if (member == null) {
+            throw new DataNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+
+        MemberDto memberDto = new MemberDto();
+        memberDto.setUsername(member.getUsername());
+        memberDto.setName(member.getName());
+        memberDto.setEmail(member.getEmail());
+        memberDto.setPhone(member.getPhone());
+        memberDto.setAddr1(member.getAddr1());
+        memberDto.setAddr2(member.getAddr2());
+
+        model.addAttribute("member", member);
+        model.addAttribute("memberDto", memberDto);
+
+        return "member/me";
+    }
+
+    @PostMapping("/me/{id}/modify")
+    public String modify(@PathVariable("id") String id,
+                         @Valid MemberDto memberDto,
+                         BindingResult bindingResult,
+                         Model model) {
+
+        Member member = this.memberService.getMember(id);
+
+        if (member == null) {
+            throw new DataNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("member", member);
+            return "member/me";
+        }
+
+
+        Member modifyMember = this.memberService.modify(
+                member.getUsername(),
+                memberDto.getPassword1(),
+                memberDto.getName(),
+                memberDto.getEmail(),
+                memberDto.getPhone(),
+                memberDto.getAddr1(),
+                memberDto.getAddr2()
+        );
+
+        return "redirect:/";
+
+    }
 
 }
