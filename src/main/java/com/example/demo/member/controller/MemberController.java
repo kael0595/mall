@@ -41,8 +41,6 @@ public class MemberController {
             return "member/join";
         }
 
-        System.out.println(memberDto.toString());
-
         Member member = this.memberService.join(
                 memberDto.getUsername(),
                 memberDto.getName(),

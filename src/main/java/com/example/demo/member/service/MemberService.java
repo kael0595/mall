@@ -20,8 +20,6 @@ public class MemberService {
 
     public Member join(String username, String name, String password1, String email, String phone, String addr1, String addr2) {
 
-        System.out.println(phone);
-
         Member member = new Member();
         member.setUsername(username);
         member.setName(name);
@@ -33,9 +31,10 @@ public class MemberService {
 
         if (username.startsWith("admin")) {
             member.setGrade(Grade.ADMIN);
+        } else {
+            member.setGrade(Grade.BASIC);
         }
 
-        member.setGrade(Grade.BASIC);
         return memberRepository.save(member);
     }
 
