@@ -18,13 +18,16 @@ public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public Member join(String username, String name, String password1, String email, String addr1, String addr2) {
+    public Member join(String username, String name, String password1, String email, String phone, String addr1, String addr2) {
+
+        System.out.println(phone);
 
         Member member = new Member();
         member.setUsername(username);
         member.setName(name);
         member.setPassword(passwordEncoder.encode(password1));
         member.setEmail(email);
+        member.setPhone(phone);
         member.setAddr1(addr1);
         member.setAddr2(addr2);
 

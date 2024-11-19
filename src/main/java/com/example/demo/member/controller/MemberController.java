@@ -6,6 +6,7 @@ import com.example.demo.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class MemberController {
 
     private final MemberService memberService;
+
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/join")
     public String join(MemberDto memberDto) {
@@ -38,12 +41,17 @@ public class MemberController {
             return "member/join";
         }
 
-        Member member = this.memberService.join(memberDto.getUsername(),
+        System.out.println(memberDto.toString());
+
+        Member member = this.memberService.join(
+                memberDto.getUsername(),
                 memberDto.getName(),
                 memberDto.getPassword1(),
                 memberDto.getEmail(),
+                memberDto.getPhone(),
                 memberDto.getAddr1(),
-                memberDto.getAddr2());
+                memberDto.getAddr2()
+        );
 
         return "redirect:/";
     }
