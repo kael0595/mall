@@ -2,14 +2,16 @@ package com.example.demo.member.controller;
 
 import com.example.demo.member.dto.MemberDto;
 import com.example.demo.member.entity.Member;
+import com.example.demo.member.service.MemberService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import com.example.demo.member.service.MemberService;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -43,6 +45,33 @@ public class MemberController {
                 memberDto.getAddr1(),
                 memberDto.getAddr2());
 
+        return "redirect:/";
+    }
+
+    @GetMapping("/login")
+    public String login(MemberDto memberDto) {
+        return "member/login";
+    }
+
+    @PostMapping("/login")
+    public String memberLogin(@RequestParam("username") String username,
+                              @RequestParam("password") String password,
+                              HttpSession session,
+                              BindingResult bindingResult) {
+
+        Member member = memberService.getMember(username);
+
+        if (member == null) {
+            bindingResult.rejectValue("LoginFail", "존재하지 않는 계정입니다.");
+            return "redirect:/member/login";
+        }
+
+        if (!member.getPassword().equals(password)) {
+            bindingResult.rejectValue("LoginFail", "비밀번호가 일치하지 않습니다.");
+            return "member/login";
+        }
+
+        session.setAttribute("member", member);
         return "redirect:/";
     }
 
